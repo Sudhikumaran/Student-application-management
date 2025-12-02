@@ -1,13 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import { useUser, useClerk } from "@clerk/clerk-react";
 
 const Layout = ({ children }) => {
-  const { admin, logout } = useAuth();
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const location = useLocation();
 
   const handleLogout = () => {
-    logout();
+    signOut({ redirectUrl: "/" });
   };
 
   const isDashboard = location.pathname === "/dashboard";
@@ -29,9 +30,13 @@ const Layout = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            {admin && (
+            {user && (
               <div className="text-xs text-slate-500">
-                Signed in as <span className="font-medium">{admin.username}</span>
+                Signed in as{" "}
+                <span className="font-medium">
+                  {user.fullName || user.primaryEmailAddress?.emailAddress ||
+                    user.username || "Admin"}
+                </span>
               </div>
             )}
             <div className="flex items-center gap-2">

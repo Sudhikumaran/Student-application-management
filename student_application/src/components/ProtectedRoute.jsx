@@ -1,12 +1,12 @@
 import React from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
+import { Outlet, useLocation } from "react-router-dom";
+import { RedirectToSignIn, useAuth } from "@clerk/clerk-react";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-slate-600 text-sm">Checking session...</div>
@@ -14,8 +14,8 @@ const ProtectedRoute = () => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace state={{ from: location }} />;
+  if (!isSignedIn) {
+    return <RedirectToSignIn redirectUrl={location.pathname + location.search} />;
   }
 
   return <Outlet />;
