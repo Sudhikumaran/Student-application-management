@@ -46,11 +46,39 @@ const StudentDetailsPage = () => {
             <dd className="col-span-2 text-slate-900">{student.courseName}</dd>
           </div>
           <div className="grid grid-cols-3 gap-4 px-4 py-3">
+            <dt className="text-slate-500">Application ID</dt>
+            <dd className="col-span-2 text-slate-900">{student.applicationId}</dd>
+          </div>
+          <div className="grid grid-cols-3 gap-4 px-4 py-3">
+            <dt className="text-slate-500">Phone number</dt>
+            <dd className="col-span-2 text-slate-900">{student.phoneNumber}</dd>
+          </div>
+          <div className="grid grid-cols-3 gap-4 px-4 py-3">
+            <dt className="text-slate-500">Date of birth</dt>
+            <dd className="col-span-2 text-slate-900">{student.dateOfBirth}</dd>
+          </div>
+          <div className="grid grid-cols-3 gap-4 px-4 py-3">
+            <dt className="text-slate-500">Address</dt>
+            <dd className="col-span-2 text-slate-900">
+              {student.address}
+              {student.city ? `, ${student.city}` : ""}
+              {student.country ? `, ${student.country}` : ""}
+            </dd>
+          </div>
+          <div className="grid grid-cols-3 gap-4 px-4 py-3">
             <dt className="text-slate-500">Created date</dt>
             <dd className="col-span-2 text-slate-900">
               {new Date(student.createdAt).toLocaleString()}
             </dd>
           </div>
+          {student.notes && (
+            <div className="grid grid-cols-3 gap-4 px-4 py-3">
+              <dt className="text-slate-500">Notes</dt>
+              <dd className="col-span-2 text-slate-900 whitespace-pre-wrap">
+                {student.notes}
+              </dd>
+            </div>
+          )}
         </dl>
 
         <div className="flex gap-2">

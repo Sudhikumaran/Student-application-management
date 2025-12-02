@@ -39,6 +39,9 @@ const DashboardPage = () => {
                 Course
               </th>
               <th className="px-4 py-2 text-left font-medium text-slate-600">
+                Application ID
+              </th>
+              <th className="px-4 py-2 text-left font-medium text-slate-600">
                 Created
               </th>
               <th className="px-4 py-2 text-right font-medium text-slate-600">
@@ -50,7 +53,7 @@ const DashboardPage = () => {
             {students.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-4 py-6 text-center text-xs text-slate-400"
                 >
                   No student applications yet. Click "New student" to create one.
@@ -65,6 +68,9 @@ const DashboardPage = () => {
                   <td className="px-4 py-2 text-slate-600">{student.email}</td>
                   <td className="px-4 py-2 text-slate-600">
                     {student.courseName}
+                  </td>
+                  <td className="px-4 py-2 text-slate-600">
+                    {student.applicationId}
                   </td>
                   <td className="px-4 py-2 text-slate-500">
                     {new Date(student.createdAt).toLocaleString()}

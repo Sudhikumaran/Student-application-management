@@ -24,12 +24,30 @@ export const StudentsProvider = ({ children }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
   }, [students]);
 
-  const addStudent = ({ fullName, email, courseName }) => {
+  const addStudent = ({
+    fullName,
+    email,
+    courseName,
+    phoneNumber,
+    dateOfBirth,
+    address,
+    city,
+    country,
+    notes,
+    applicationId,
+  }) => {
     const newStudent = {
       id: generateId(),
       fullName,
       email,
       courseName,
+      phoneNumber,
+      dateOfBirth,
+      address,
+      city,
+      country,
+      notes,
+      applicationId,
       createdAt: new Date().toISOString(),
     };
     setStudents((prev) => [newStudent, ...prev]);
