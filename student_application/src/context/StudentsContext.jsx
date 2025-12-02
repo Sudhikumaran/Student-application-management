@@ -2,29 +2,45 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const StudentsContext = createContext(null);
 
-const STORAGE_KEY = "students";
+const API_BASE_URL = "http://localhost:5000/api";
 
-const generateId = () => crypto.randomUUID();
+const mapFromApi = (row) => ({
+  id: row.id,
+  fullName: row.full_name,
+  email: row.email,
+  courseName: row.course_name,
+  phoneNumber: row.phone_number,
+  dateOfBirth: row.date_of_birth,
+  address: row.address,
+  city: row.city,
+  country: row.country,
+  notes: row.notes,
+  applicationId: row.application_id,
+  createdAt: row.created_at,
+});
 
 export const StudentsProvider = ({ children }) => {
   const [students, setStudents] = useState([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    const fetchStudents = async () => {
       try {
-        setStudents(JSON.parse(stored));
-      } catch {
-        setStudents([]);
+        const res = await fetch(`${API_BASE_URL}/students`);
+        if (!res.ok) {
+          console.error("Failed to load students", await res.text());
+          return;
+        }
+        const data = await res.json();
+        setStudents(data.map(mapFromApi));
+      } catch (error) {
+        console.error("Error loading students", error);
       }
-    }
+    };
+
+    fetchStudents();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
-  }, [students]);
-
-  const addStudent = ({
+  const addStudent = async ({
     fullName,
     email,
     courseName,
@@ -36,35 +52,81 @@ export const StudentsProvider = ({ children }) => {
     notes,
     applicationId,
   }) => {
-    const newStudent = {
-      id: generateId(),
-      fullName,
+    const body = {
+      full_name: fullName,
       email,
-      courseName,
-      phoneNumber,
-      dateOfBirth,
+      course_name: courseName,
+      phone_number: phoneNumber,
+      date_of_birth: dateOfBirth,
       address,
       city,
       country,
       notes,
-      applicationId,
-      createdAt: new Date().toISOString(),
+      application_id: applicationId,
     };
-    setStudents((prev) => [newStudent, ...prev]);
-    return newStudent;
+
+    const res = await fetch(`${API_BASE_URL}/students`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Failed to create student");
+    }
+
+    const created = mapFromApi(await res.json());
+    setStudents((prev) => [created, ...prev]);
+    return created;
   };
 
-  const updateStudent = (id, updates) => {
+  const updateStudent = async (id, updates) => {
+    const body = {
+      full_name: updates.fullName,
+      email: updates.email,
+      course_name: updates.courseName,
+      phone_number: updates.phoneNumber,
+      date_of_birth: updates.dateOfBirth,
+      address: updates.address,
+      city: updates.city,
+      country: updates.country,
+      notes: updates.notes,
+      application_id: updates.applicationId,
+    };
+
+    const res = await fetch(`${API_BASE_URL}/students/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Failed to update student");
+    }
+
+    const updated = mapFromApi(await res.json());
     setStudents((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
+      prev.map((s) => (String(s.id) === String(id) ? updated : s))
     );
   };
 
-  const deleteStudent = (id) => {
-    setStudents((prev) => prev.filter((s) => s.id !== id));
+  const deleteStudent = async (id) => {
+    const res = await fetch(`${API_BASE_URL}/students/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok && res.status !== 204) {
+      const text = await res.text();
+      throw new Error(text || "Failed to delete student");
+    }
+
+    setStudents((prev) => prev.filter((s) => String(s.id) !== String(id)));
   };
 
-  const getStudentById = (id) => students.find((s) => s.id === id) || null;
+  const getStudentById = (id) =>
+    students.find((s) => String(s.id) === String(id)) || null;
 
   return (
     <StudentsContext.Provider

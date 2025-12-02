@@ -92,7 +92,6 @@ const StudentFormPage = () => {
         address: address.trim(),
         city: city.trim(),
         country: country.trim(),
-        enrollmentStatus,
         applicationId: applicationId.trim(),
         notes: notes.trim(),
       });
